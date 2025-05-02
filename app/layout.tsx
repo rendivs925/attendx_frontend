@@ -1,6 +1,4 @@
 "use client";
-import { Provider } from "react-redux";
-import { store } from "@/redux/store";
 import { Montserrat, Poppins } from "next/font/google";
 import "./globals.css";
 
@@ -24,14 +22,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <Provider store={store}>
-      <html lang="en">
-        <body
-          className={`${montserrat.variable} ${poppins.variable} antialiased`}
-        >
-          {children}
-        </body>
-      </html>
-    </Provider>
+    <html lang="en">
+      <body
+        className={`${montserrat.variable} ${poppins.variable} antialiased`}
+      >
+        {children}
+      </body>
+    </html>
   );
 }

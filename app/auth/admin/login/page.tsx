@@ -1,10 +1,10 @@
-import { LoginForm } from "@/components/common/login/LoginForm";
+import { LoginForm } from "@/components/common/auth/LoginForm";
 
 export default function Page() {
   return (
     <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
       <div className="w-full max-w-sm">
-        <LoginForm />
+        <LoginForm role="admin" />
       </div>
     </div>
   );

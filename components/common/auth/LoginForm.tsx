@@ -1,4 +1,5 @@
 "use client";
+
 import React from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -10,23 +11,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { useLoginForm } from "@/hooks/auth/useLoginForm";
-import FormFieldComponent from "@/components/ui/FormFieldComponent";
-import { RoleType } from "@/types";
 
-export function LoginForm({
-  className,
-  ...props
-}: React.ComponentPropsWithoutRef<"div">) {
-  const {
-    control,
-    methods,
-    handleSubmit,
-    errors,
-    role,
-    handleRoleChange,
-    onSubmit,
-  } = useLoginForm();
+import { FormFieldBlock } from "./LoginForm.fields";
+import { fieldConfigs } from "./LoginForm.config";
+import { LoginFormProps } from "./LoginForm.types";
+import { useLoginForm } from "@/hooks/auth/useLoginForm";
+
+export function LoginForm({ className, role, ...props }: LoginFormProps) {
+  const { form, loading, onSubmit } = useLoginForm(role);
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -34,76 +26,28 @@ export function LoginForm({
         <CardHeader>
           <CardTitle className="text-2xl">Login</CardTitle>
           <CardDescription>
-            Enter your credentials below to login to your account
+            {role === "admin"
+              ? "Login with your admin credentials."
+              : "Login using your personal and organization credentials."}
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Form {...methods}>
+          <Form {...form}>
             <form
-              onSubmit={handleSubmit(onSubmit)}
+              onSubmit={form.handleSubmit(onSubmit)}
               className="flex flex-col gap-6"
             >
-              <FormFieldComponent
-                name="role"
-                label="Select Role"
-                type="select"
-                control={control}
-                errors={errors}
-                value={role}
-                onValueChange={(value) => handleRoleChange(value as RoleType)}
-                options={[
-                  { value: "Student", label: "Student" },
-                  { value: "Teacher", label: "Teacher" },
-                  { value: "Admin", label: "Admin" },
-                ]}
-              />
-
-              {/* Conditional Fields Based on Role */}
-              {role === "Student" && (
-                <FormFieldComponent
-                  name="nim"
-                  label="NIM"
-                  type="text"
-                  control={control}
-                  errors={errors}
-                  placeholder="Enter your NIM"
+              {fieldConfigs[role].map(({ name, label, type }) => (
+                <FormFieldBlock
+                  key={name}
+                  control={form.control}
+                  name={name}
+                  label={label}
+                  type={type}
                 />
-              )}
-
-              {role === "Teacher" && (
-                <FormFieldComponent
-                  name="nidn"
-                  label="NIDN"
-                  type="text"
-                  control={control}
-                  errors={errors}
-                  placeholder="Enter your NIDN"
-                />
-              )}
-
-              {role === "Admin" && (
-                <FormFieldComponent
-                  name="email"
-                  label="Email"
-                  type="email"
-                  control={control}
-                  errors={errors}
-                  placeholder="Enter your email"
-                />
-              )}
-
-              {/* Common Password Field */}
-              <FormFieldComponent
-                name="password"
-                label="Password"
-                type="password"
-                control={control}
-                errors={errors}
-                placeholder="Enter your password"
-              />
-
-              <Button type="submit" className="w-full">
-                Login
+              ))}
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? "Logging in..." : "Login"}
               </Button>
             </form>
           </Form>
